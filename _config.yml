@@ -16,7 +16,8 @@
 title: diffickens
 email: me@example.com
 description: >-
-  Awsome blog.
+  “when you don't create things, you become defined by your tastes rather than
+  ability. your tastes only narrow & exclude people. so create.” - _why
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
