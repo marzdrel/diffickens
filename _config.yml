@@ -15,9 +15,7 @@
 # in the templates via {{ site.myvariable }}.
 title: diffickens
 email: me@example.com
-description: >-
-  “when you don't create things, you become defined by your tastes rather than
-  ability.”
+description: ""
 
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
