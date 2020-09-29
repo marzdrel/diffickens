@@ -72,6 +72,11 @@ automatic translation between labels and values cannot be performed.
 
 {% highlight ruby %}
 
-User.joins("LEFT JOINS posts ON posts.user_id = user.id AND post.status = %<status>d")
+User
+  .joins(<<~SQL.squish)
+    LEFT JOINS posts 
+      ON posts.user_id = user.id 
+        AND post.status = 1
+  SQL
 
 {% endhighlight %}
