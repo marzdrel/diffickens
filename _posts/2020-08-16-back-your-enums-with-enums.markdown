@@ -65,7 +65,7 @@ numbers by `ActiveRecord`.
 {% highlight ruby %}
 
 Post.removed.to_sql 
-# => SELECT "post".* FROM "post" WHERE "post"."status" = 0
+# => SELECT "posts".* FROM "posts" WHERE "posts"."status" = 0
 
 {% endhighlight %}
 
