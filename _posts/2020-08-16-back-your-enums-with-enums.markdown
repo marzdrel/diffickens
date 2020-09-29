@@ -32,7 +32,8 @@ class Post < ApplicationRecord
   enum status: [:draft, :published]
 end
 
-Post.statuses # => 
+Post.statuses 
+# => {"draft"=>0, "published"=>1}
 {% endhighlight %}
 
 There are two main problem with the Array way. First of all you can't really
@@ -52,7 +53,8 @@ class Post < ApplicationRecord
   enum status: [:removed, :draft, :published]
 end
 
-Post.statuses # => 
+Post.statuses 
+# => {"removed"=>0, "draft"=>1, "published"=>2}
 {% endhighlight %}
 
 There are many issues with number-backed enums. Regardless of the declaration
@@ -62,7 +64,8 @@ numbers by `ActiveRecord`.
 
 {% highlight ruby %}
 
-Post.removed.to_sql
+Post.removed.to_sql 
+# => SELECT "post".* FROM "post" WHERE "post"."status" = 0
 
 {% endhighlight %}
 
