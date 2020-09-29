@@ -2,7 +2,7 @@
 layout: post
 title:  "Backing Rails enums with Postgres ENUM type"
 date:   "2020-08-16 18:38:19"
-categories: ruby rails sql postgres
+categories: rails
 ---
 Enum in Rails was introduced in version 4.1. It's a handy feature, which lets
 you describe any trait of an object in a very friendly and human
