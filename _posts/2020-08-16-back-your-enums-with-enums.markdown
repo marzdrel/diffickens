@@ -249,4 +249,4 @@ your names with table and column name if your `ENUM` is defined for one table
 only. If you want to define an enum for more widespread use, some more generic
 name like `enum_languages` can be more appropriate.
 
-[activerecord-postgres_enum]: https://github.com/bibendi/activerecord-postgres_e
+[activerecord-postgres_enum]: https://github.com/bibendi/activerecord-postgres_enum
