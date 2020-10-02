@@ -113,8 +113,8 @@ you won't be able to tell what statuses are used by the query.
 
 ## Storing values as Strings
 
-If you define an enum backed by a string, you can define any indentifier for
-the values. Most likey you might want to use exactly the same indentifier as the
+If you define an enum backed by a string, you can define any identifier for
+the values. Most likely you might want to use exactly the same identifier as the
 one used in the Rails enum. 
 
 {% highlight ruby %}
