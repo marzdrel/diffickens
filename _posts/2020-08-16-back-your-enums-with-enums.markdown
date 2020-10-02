@@ -85,15 +85,15 @@ User
 This particular query could be replaced with one using a `WHERE` clause, but
 there are valid cases, when you might want to use custom syntax in other parts
 of your SQL-query. Lets stick to this as an example for now. As for Rails 6 you
-still cannot use bind wariables in `JOIN` syntax (as you can with `WHERE`), so
+still cannot use bind variables in `JOIN` syntax (as you can with `WHERE`), so
 there is no other way to build the query.
 
 Instad of explicit values you might be better of using values extracted from
 the definition in the model. To be honest this is probably what you should be
 doing if you are stuck with number based enums anyway. This way you can still
 avoid "knowledge duplication". Any change of the values might require less
-changes in the system.  Whats most imporant you can still see what is actually
-going on here with refereing to the status definition in the model.
+changes in the system. What's most important you can still see what is actually
+going on here without checking the status definition in the model.
 
 {% highlight ruby %}
 
@@ -109,12 +109,12 @@ User
 {% endhighlight %}
 
 This isn't all that bad, but if you ever end up somewhere looking at final query
-you won't be able to what statuses are used by the query.
+you won't be able to tell what statuses are used by the query.
 
 ## Storing values as Strings
 
 If you define an enum backed by a string, you can define any indentifier for
-the values. Mostlikey you might want to use exaclty the same indentifier as the
+the values. Most likey you might want to use exactly the same indentifier as the
 one used in the Rails enum. 
 
 {% highlight ruby %}
@@ -144,16 +144,16 @@ look at your raw tables in SQL client you will immidietly understand
 what the query is doing. There is no hidden meaning, no need to
 reference identifiers in other places. 
 
-One serious drawback to this apporach is of course the storage
-used. With enums you can just juse `smallint` type (because you wont need
+One serious drawback to this approach is of course the storage
+used. With enums you can just use `smallint` type (because you wont need
 more than 65k different enum values anyway). This will consume just 2 bytes per
 row of your table. Strings on the other hand will much more space depending on
 how long identifiers will you use.
 
-If your table stores milions+ of records and you need an enum there, you
+If your table stores millions+ of records and you need an enum there, you
 might want to sacrifice readability to save some space.
 
-Another issue with string based enums raise when you tend to manualy encode
+Another issue with string based enums raise when you tend to manually encode
 the values in queries. Typo in long identifier sometimes gets unnoticed as
 you just get no rows as the result. Even though same might happen with
 integers, it happens to me a lot more often with string based enums.
@@ -197,8 +197,8 @@ end
 This migration assumes that you already have a Rails enum backed by a
 string. It creates Postgres `ENUM` type for your Posts and then changes
 the type of the column in posts to newly defined enum. As long as your
-current string values are consisent and contain only defined values,
-the conversion will be straghtforward. Otherwise Postgres will fail to
+current string values are consistent and contain only defined values,
+the conversion will be straightforward. Otherwise Postgres will fail to
 perform the change throwing an error and you will have to remove/fix 
 any invalid entries.
 
@@ -231,7 +231,7 @@ just because there was typo or `nil` leaking from somewhere else.
 
 As a side-benefit, ENUMs consume only four bytes on disk. They are pretty
 much on-pair with integers when it comes to space, but hold all the
-readablity benefits of strings and provide extra safety from various
+readability benefits of strings and provide extra safety from various
 coding mistakes. 
 
 ## Final words
@@ -244,7 +244,7 @@ in your migrations. After introducing your first `ENUM` everything else can be
 just duplicated with the magic of your editor.
 
 You must choose names for your `ENUM` types carefully. If you define a lot of
-different types you might get overwhelemed quickly. I would suggest to prefix
+different types you might get overwhelmed quickly. I would suggest to prefix
 your names with table and column name if your `ENUM` is defined for one table
 only. If you want to define an enum for more widespread use, some more generic
 name like `enum_languages` can be more appropriate.
