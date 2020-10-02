@@ -140,7 +140,7 @@ User
 {% endhighlight %}
 
 Whenever you spot a raw SQL in specs or logs, or when you might need to
-look at your raw tables in SQL client you will immidetly understand
+look at your raw tables in SQL client you will immediately understand
 what the query is doing. There is no hidden meaning, no need to
 reference identifiers in other places. 
 
@@ -237,15 +237,16 @@ coding mistakes.
 
 ## Final words
 
-There is a gem
-(activerecord-postgres_enum)[https://github.com/bibendi/activerecord-postgres_e
-num] which might lower the friction for using ENUMs in your models, but I would
-recommend against using external dependency just to save some cut'n'paste code
-in your migrations. After introducing your first `ENUM` everything else can be
-just duplicated with the magic of your editor.
+There is a gem [activerecord-postgres_enum](activerecord-postgres_enum) which
+might lower the friction for using ENUMs in your models, but I would recommend
+against using external dependency just to save some cut'n'paste code in your
+migrations. After introducing your first `ENUM` everything else can be just
+duplicated with the magic of your editor.
 
 You must choose names for your `ENUM` types carefully. If you define a lot of
 different types you might get overwhelmed quickly. I would suggest to prefix
 your names with table and column name if your `ENUM` is defined for one table
 only. If you want to define an enum for more widespread use, some more generic
 name like `enum_languages` can be more appropriate.
+
+[activerecord-postgres_enum]: https://github.com/bibendi/activerecord-postgres_e
