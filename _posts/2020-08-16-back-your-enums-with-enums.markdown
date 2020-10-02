@@ -154,8 +154,9 @@ If your table stores millions+ of records and you need an enum there, you
 might want to sacrifice readability to save some space.
 
 Another issue with string based enums raise when you tend to manually encode
-the values in queries. Typo in long identifier sometimes gets unnoticed as
-you just get no rows as the result. Even though same might happen with
+the values in queries. And using strings will make you do that a lot
+more. Typo in long identifier sometimes gets unnoticed as you just get
+no rows as the result. Even though same might happen with
 integers, it happens to me a lot more often with string based enums.
 
 ## Enter ENUM Type in Postgres
