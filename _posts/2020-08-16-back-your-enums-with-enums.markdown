@@ -140,7 +140,7 @@ User
 {% endhighlight %}
 
 Whenever you spot a raw SQL in specs or logs, or when you might need to
-look at your raw tables in SQL client you will immidietly understand
+look at your raw tables in SQL client you will immidetly understand
 what the query is doing. There is no hidden meaning, no need to
 reference identifiers in other places. 
 
