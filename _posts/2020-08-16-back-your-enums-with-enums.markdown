@@ -115,9 +115,7 @@ you won't be able to what statuses are used by the query.
 
 If you define an enum backed by a string, you can define any indentifier for
 the values. Mostlikey you might want to use exaclty the same indentifier as the
-one used in the Rails enum. This gets a bit mouthful, but there is no easier
-way to define this kind of definition as of Rails 6. Using stings has some
-serious readability definitions.
+one used in the Rails enum. 
 
 {% highlight ruby %}
 class Post < ApplicationRecord
@@ -127,3 +125,111 @@ end
 Post.statuses 
 # => {"draft"=>"draft", "published"=>"published"}
 {% endhighlight %}
+
+This gets a bit mouthful, but there is no easier way to define this kind
+of definition as of Rails 6. Using stings has some serious readability
+benefits.
+
+{% highlight ruby %}
+User
+  .joins(<<~SQL.squish)
+    LEFT JOINS posts 
+      ON posts.user_id = user.id 
+        AND post.status = 'published'
+  SQL
+{% endhighlight %}
+
+Whenever you spot a raw SQL in specs or logs, or when you might need to
+look at your raw tables in SQL client you will immidietly understand
+what the query is doing. There is no hidden meaning, no need to
+reference identifiers in other places. 
+
+One serious drawback to this apporach is of course the storage
+used. With enums you can just juse shortint type (because you wont need
+more than 65k values anyway). This will consume just 2 bytes per row of
+your table. Strings on the other hand will much more space depending on
+how long identifier will be used. 
+
+If your table stores milions of records and you need an enum there, you
+might want to sacrifice readability to save some space.
+
+Another issue with string based enums raise when you tend to manualy encode
+the values in queries. Typo in long identifier sometimes gets unnoticed as
+you just get no rows as the results. Even though same might happen with
+integers, it happens to me a lot more often with string based enums.
+
+## Enter ENUM Type in Postgres
+
+As stated by Postgres documentation: _Enumerated (enum) types are data
+types that comprise a static, ordered set of values. They are equivalent
+to the enum types supported in a number of programming languages. An
+example of an enum type might be the days of the week, or a set of
+status values for a piece of data._
+
+There is no direct way to create an ENUM in Rails as for now, but you can
+easily add some manual SQL in order to perform this.
+
+{% highlight ruby %}
+class CreatePostsStatusesEnum < ActiveRecord::Migration[6.0]
+  def up
+    execute <<-SQL.squish
+      CREATE TYPE posts_statuses_enum 
+        AS ENUM('draft', 'published');
+    SQL
+    
+    change_column(
+      :posts,
+      :status,
+      "posts_statuses_enum USING status::posts_statuses_enum",
+    )
+  end
+
+  dir.down do
+    execute <<-SQL.squish
+      DROP TYPE posts_statuses_enum;
+    SQL
+    
+    change_column(:posts, :status, :string)
+  end
+end
+{% endhighlight %}
+
+This migration assumes that you already have a Rails enum backed by a
+string. It creates Postgres ENUM type for your Posts and then changes
+the type of the column in posts to newly defined enum. As long as your
+current string values are consisent and contain only defined values,
+the conversion will be straghtforward. Otherwise postgres will fail to
+perform the change claming it doesn't know how perform the change, so
+you will have to remove/fix any invalid entries.
+
+{% highlight ruby %}
+class Post < ApplicationRecord
+  enum status: { draft: "draft", published: "published" }
+end
+
+Post.statuses 
+# => {"draft"=>"draft", "published"=>"published"}
+{% endhighlight %}
+
+The same definition used previously for strings still works here as
+before, so no changes in the model code are required. So, why did we
+ever bother to use ENUM type in this case?
+
+{% highlight ruby %}
+Post.where("state = 'pubilshed'")
+# => PG::InvalidTextRepresentation: ERROR: invalid input 
+#    value for enum posts_statuses_enum: "pubilshed"
+
+Post.published.to_sql 
+# => SELECT "posts".* FROM "posts" WHERE "posts"."status" = 'published'
+{% endhighlight %}
+
+Whenever you will try to read or write the value from the enum field,
+you will get an exception if the value is outside defined scope. No typo
+will cause silent failure anymore. No more invalid results looking legit
+just because there was typo or nil leaking from somewhere else.
+
+As a side-benefit, ENUMs consume only four bytes on disk. They are pretty
+much on-pair with integers when it comes to space, but hold all the
+readablity benefits of strings and provide extra safety from various
+coding mistakes. 
