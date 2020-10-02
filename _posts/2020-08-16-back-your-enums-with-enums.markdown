@@ -17,6 +17,9 @@ By default (and by common practice) Rails enums use integer type to store values
 class Post < ApplicationRecord
   enum status: { draft: 0, published: 1 }
 end
+
+Post.statuses 
+# => {"draft"=>0, "published"=>1}
 {% endhighlight %}
 
 With this approach `status` field is expected to store numbers. At the
@@ -36,12 +39,7 @@ Post.statuses
 # => {"draft"=>0, "published"=>1}
 {% endhighlight %}
 
-There are two main problem with the Array way. First of all you can't really
-tell what type is used to store the values in the database. In most cases it
-will be a number, but you will have to check the type of the column just to be
-sure. 
-
-Another, more severe issue is related to the actual values assigned to
+There is one very dangerous issue related to the actual values assigned to
 provided labels. Rails will enumerate the Array and use the index of the given
 field to back the value in the database. If someone decides to add another
 label in the front of the Array (for example `removed`), all values will
@@ -69,8 +67,8 @@ Post.removed.to_sql
 
 {% endhighlight %}
 
-When you have build a sql-query by hand, you have to manually translated enums
-to numbers. There are still many places in ActiveRecord syntax, when the
+When you have to build a sql-query by hand, you have to manually translate enums
+to numbers. There are still many places in ActiveRecord syntax, where the
 automatic translation between labels and values cannot be performed.
 
 {% highlight ruby %}
@@ -82,4 +80,50 @@ User
         AND post.status = 1
   SQL
 
+{% endhighlight %}
+
+This particular query could be replaced with one using a `WHERE` clause, but
+there are valid cases, when you might want to use custom syntax in other parts
+of your SQL-query. Lets stick to this as an example for now. As for Rails 6 you
+still cannot use bind wariables in `JOIN` syntax (as you can with `WHERE`), so
+there is no other way to build the query.
+
+Instad of explicit values you might be better of using values extracted from
+the definition in the model. To be honest this is probably what you should be
+doing if you are stuck with number based enums anyway. This way you can still
+avoid "knowledge duplication". Any change of the values might require less
+changes in the system.  Whats most imporant you can still see what is actually
+going on here with refereing to the status definition in the model.
+
+{% highlight ruby %}
+
+status = Post.statuses.fetch("published")
+
+User
+  .joins(format(<<~SQL.squish, status: status))
+    LEFT JOINS posts 
+      ON posts.user_id = user.id 
+        AND post.status = %<status>s
+  SQL
+
+{% endhighlight %}
+
+This isn't all that bad, but if you ever end up somewhere looking at final query
+you won't be able to what statuses are used by the query.
+
+### Storing values as Strings
+
+If you define an enum backed by a string, you can define any indentifier for
+the values. Mostlikey you might want to use exaclty the same indentifier as the
+one used in the Rails enum. This gets a bit mouthful, but there is no easier
+way to define this kind of definition as of Rails 6. Using stings has some
+serious readability definitions.
+
+{% highlight ruby %}
+class Post < ApplicationRecord
+  enum status: { draft: "draft", published: "published" }
+end
+
+Post.statuses 
+# => {"draft"=>"draft", "published"=>"published"}
 {% endhighlight %}
