@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Backing Rails enums with Postgres ENUM type"
-date:   "2020-08-16 18:38:19"
+date:   "2020-10-02 18:38:19"
 categories: rails
 ---
 Enum in Rails was introduced in version 4.1. It's a handy feature, which lets
