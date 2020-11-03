@@ -6,4 +6,4 @@ permalink: /about/
 
 Well, there is nothing here yet.
 
-Contact me at: drx3brun(at)protonmail(dot)com
+If you wan't do contact me for some reason plese don't.
