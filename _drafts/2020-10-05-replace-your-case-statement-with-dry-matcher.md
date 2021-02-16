@@ -163,7 +163,7 @@ def shipping_cost(country, weight)
 end
 {% endhighlight %}
 
-The call to matcher yields an object which defines a branch. code. If the
+The call to matcher yields an object which defines a branch. If the
 country value is `DE`, then the value from block `5 + weight * 0.6` will get
 returned from this method. The sytnax is pretty compact and resonable, but
 that's not the reason we wan't to replace the previous `case` example.
