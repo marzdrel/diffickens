@@ -1,11 +1,11 @@
 ---
 layout: post
-title:  "Replace case-statements with dry-matchers [draft]"
-date:   2020-10-05 20:52:57 +0200
+title:  "Replace case-statements with dry-matchers"
+date:   2021-02-17 21:10:57 +0200
 categories: rails
 ---
 
-Gem `dry-matcher` offers very flexible and robust pattern matching API for
+Gem [`dry-matcher`](https://dry-rb.org/gems/dry-matcher/0.8/) offers very flexible and robust pattern matching API for
 Ruby. While the gem has many interesting use-cases I would like to focus on
 very specific one.
 
@@ -67,7 +67,7 @@ support for another country with another set of custom rules. If the first
 fail. This method will return `nil`. This might cause an exception later
 in a totally different part of the code. Either way - in most cases - failing
 is probably a good thing. At least you will know that there is an error,
-which needs to be fixed. Imagine that the `nil` value will get coerced to a
+which needs to be fixed. But imagine that the `nil` value will get coerced to a
 zero somewhere along the way. This means that shipping in new country will
 automatically be free.
 
@@ -77,10 +77,12 @@ The second `if` example is pretty obvious. Every new country lands in the
 Of course you might easily patch that problem. It's enough to provide an `else`
 clause with exception. This way any unexpected value will stop the execution.
 This gets cumbersome pretty fast and many people tend to skip such fail-branches
-while rushing the delivery of new features.
+while rushing the delivery of new features. In general we should aim for
+[failing fast](https://martinfowler.com/ieeeSoftware/failFast.pdf), but
+sometimes we just get bored by copy-pasting a boilerplate code.
 
-Also, your app needs very through end-to-end testing suite in order to catch such
-branching errors before going into production.
+Also, your app needs very thorough end-to-end testing suite in order to catch
+such branching errors before going into production.
 
 ## The solution
 
@@ -181,7 +183,7 @@ shipping_cost("FR", 10)
 Unless the country code is included in type definition, the call will
 immediately fail. The error will be very clear and will point directly to the
 cause. It doesn't require a custom `else` clause in every branching, which is
-already good trade off.
+already good trade-off.
 
 The best part comes to play, when you decide to introduce a new market. First
 you will probably add another value to the type definition, so lets put `FR` at
@@ -323,7 +325,7 @@ end
 
 Writing this requirements was pretty straightforward. I encourage everyone
 to try to implement this logic on their own. The idea of doing my own
-implementation as a though exercise came to me when writing this article. I've
+implementation as a thought exercise came to me when writing this article. I've
 decided to give it a go and here's what I came with. I haven't really spend too
 much time thinking about, so beware of any bugs or weird edge-cases.
 
@@ -396,4 +398,12 @@ end
 
 In case you don't know, you can just concatenate the tests with implementation
 and execute it locally. This will run all the test for you without installing
-any external dependencies.
+any external dependencies. Otherwise you might just use this [gist](https://gist.github.com/adlugopolski/eb65290eb4b1ec9bd294160d3b231a2f).
+
+## Final Words
+
+Maintaining a large code-base can be pain, but right tools and ideas can ease
+the pain a lot. Gems `dry-matcher`, `dry-types` offers much more than explained
+here. Theres plenty of great ideas buried in whole `dry-*`
+family, so everyone might find something really use-full. I encourage everyone
+to check the [dry-rb](https://dry-rb.org) website.
