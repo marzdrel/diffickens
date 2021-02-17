@@ -223,7 +223,177 @@ Whenever you tend to branch code on the same set of values, consider using this
 approach. The next time you will extend the set with new value, you will thank
 yourself.
 
-## Final words
+## Custom implementation
 
-[...]
+Even if this specific use-case is appealing, you might sill hesitate to
+introduce yet another external dependency to your app. That's a perfect valid
+concern, especially if you don't want to use `dry-matcher` for anything else.
 
+So how hard would be to implement this kind of construct by yourself?
+We know exactly what we want and how it should work. It should be easy
+to define set of tests.
+
+- Valid definition with expected country should yield result from given
+block. This is the obvious happy path we expect to use.
+- Happy path should also support typical edge cases, like a empty block or a
+nil value.
+- Every block should be able to be defined only once. Multiple definitions
+should raise
+exception.
+- Missing block for defined value should raise exception.
+- Passing unknown value to the matcher should raise exception.
+- Definition of a block for unknown value should raise exception.
+
+{% highlight ruby %}
+
+require "test/unit"
+
+class CountryMatcherTest < Test::Unit::TestCase
+  def test_valid_case
+    result = CountryMatcher.call("DE") do |match|
+      match.us { "US" }
+      match.de { "DE" }
+      match.gb { "GB" }
+    end
+
+    assert_equal result, "DE"
+  end
+
+  def test_valid_case_with_nil_result
+    result = CountryMatcher.call("DE") do |match|
+      match.us { "US" }
+      match.de {}
+      match.gb { "GB" }
+    end
+
+    assert_equal result, nil
+  end
+
+  def test_multiple_definitions
+    result = proc do
+      CountryMatcher.call("DE") do |match|
+        match.us { "US" }
+        match.de { "DE" }
+        match.de { "DE" }
+        match.gb { "GB" }
+      end
+    end
+
+    assert_raise(CountryMatcher::MultipleDefinitionError) { result.call }
+  end
+
+  def test_missing_definition
+    result = proc do
+      CountryMatcher.call("DE") do |match|
+        match.de { "DE" }
+        match.gb { "GB" }
+      end
+    end
+
+    assert_raise(CountryMatcher::MissingDefinitionError) { result.call }
+  end
+
+  def test_unknown_country
+    result = proc do
+      CountryMatcher.call("XX") do |match|
+        match.de { "DE" }
+        match.us { "US" }
+        match.gb { "GB" }
+      end
+    end
+
+    assert_raise(CountryMatcher::UnknownValueError) { result.call }
+  end
+
+  def test_unknown_case
+    result = proc do
+      CountryMatcher.call("DE") do |match|
+        match.xx { "XX" }
+        match.de { "DE" }
+        match.us { "US" }
+        match.gb { "GB" }
+      end
+    end
+
+    assert_raise(NoMethodError) { result.call }
+  end
+end
+
+{% endhighlight %}
+
+Writing this requirements was pretty straightforward. I encourage everyone
+to try to implement this logic on their own. The idea of doing my own
+implementation as a though exercise came to me when writing this article. I've
+decided to give it a go and here's what I came with. I haven't really spend too
+much time thinking about, so beware of any bugs or weird edge-cases.
+
+{% highlight ruby %}
+
+class CountryMatcher
+  COUNTRIES = ["DE", "GB", "US"]
+
+  class MultipleDefinitionError < StandardError; end
+  class MissingDefinitionError < StandardError; end
+  class UnknownValueError < StandardError; end
+
+  class Match
+    def initialize(country)
+      @country = country
+      @calls = []
+    end
+
+    COUNTRIES.each do |country|
+      define_method country.downcase do |&block|
+        if @calls.include?(country)
+          raise MultipleDefinitionError, country.inspect
+        end
+
+        @calls << country
+        @result = block.call if @country == country
+      end
+    end
+
+    def verify_and_return
+      difference.then do |missing|
+        if missing.any?
+          raise MissingDefinitionError, missing.inspect
+        end
+      end
+
+      if !COUNTRIES.include?(@country)
+        raise UnknownValueError, @country.inspect
+      end
+
+      @result
+    end
+
+    private
+
+    def difference
+      COUNTRIES.difference(@calls) +
+        @calls.difference(COUNTRIES)
+    end
+  end
+
+  def self.call(*args, **kwargs, &block)
+    new(*args, **kwargs).call(&block)
+  end
+
+  def initialize(value)
+    @value = value
+  end
+
+  def call
+    Match.new(@value).then do |match|
+      yield match
+
+      match.verify_and_return
+    end
+  end
+end
+
+{% endhighlight %}
+
+In case you don't know, you can just concatenate the tests with implementation
+and execute it locally. This will run all the test for you without installing
+any external dependencies.
