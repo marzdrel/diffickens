@@ -32,7 +32,7 @@ def shipping_cost(country, weight)
     10
   when "US"
     10
-  when "CH"
+  when "CN"
     raise "We only sell digital products in China!"
   end
 end
@@ -112,7 +112,7 @@ end
 module Types
   include Dry::Types()
 
-  Countries = Strict::String.enum("US", "DE", "GB", "CH")
+  Countries = Strict::String.enum("US", "DE", "GB", "CN")
 end
 
 class CountryMatcher < Dry::Matcher
@@ -177,7 +177,7 @@ shipping_cost("FR", 10)
 # Traceback (most recent call last):
 # [...]
 # Dry::Types::ConstraintError ("FR" violates constraints
-# (included_in?(["US", "DE", "GB", "CH"], "FR") failed))
+# (included_in?(["US", "DE", "GB", "CN"], "FR") failed))
 {% endhighlight %}
 
 Unless the country code is included in type definition, the call will
@@ -194,7 +194,7 @@ the end of list.
 module Types
   include Dry::Types()
 
-  Countries = Strict::String.enum("US", "DE", "GB", "CH", "FR")
+  Countries = Strict::String.enum("US", "DE", "GB", "CN", "FR")
 end
 
 {% endhighlight %}
