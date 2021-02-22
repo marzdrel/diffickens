@@ -159,7 +159,7 @@ def shipping_cost(country, weight)
     match.de { 5 + weight * 0.6 }
     match.gb { 10 }
     match.us { 10 }
-    match.ch { raise "We only sell digital products in China!" }
+    match.cn { raise "We only sell digital products in China!" }
   end
 end
 {% endhighlight %}
