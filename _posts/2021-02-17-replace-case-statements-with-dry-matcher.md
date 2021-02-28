@@ -7,7 +7,8 @@ categories: rails
 
 Gem [`dry-matcher`](https://dry-rb.org/gems/dry-matcher/0.8/) offers very flexible and robust pattern matching API for
 Ruby. While the gem has many interesting use-cases I would like to focus on
-very specific one.
+very specific one: Using a matcher instead of standard conditional
+structures like `if` or `case`.
 
 ## The problem
 
