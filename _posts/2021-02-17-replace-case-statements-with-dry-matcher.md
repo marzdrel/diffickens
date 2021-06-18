@@ -399,7 +399,23 @@ end
 
 In case you don't know, you can just concatenate the tests with implementation
 and execute it locally. This will run all the test for you without installing
-any external dependencies. Otherwise you might just use this [gist](https://gist.github.com/adlugopolski/eb65290eb4b1ec9bd294160d3b231a2f).
+any external dependencies. Otherwise you might just use this
+[gist](https://gist.github.com/adlugopolski/eb65290eb4b1ec9bd294160d3b231a2f).
+
+## Polymorphism
+
+Some
+[readers](https://www.moncefbelyamani.com/refactoring-technique-replace-conditional-with-polymorphism/)
+pointed out, that polymorphism is a
+[better solution](https://gist.github.com/reborg/dc8b0c96c397a56668905e2767fd697f#why-no-pattern-matching)
+than any kind of pattern matching. While in general I agree, there are few important
+points worth mentioning in this context. Ruby doesn't support multi-dispatch
+polymorphism. Any kind of generic data coming from API or user input needs to be
+transformed using some kind of dispatch. Building objects from stings without any
+kind of guarding the input might lead to security concerns. Aside from, that unexpected
+values generate very unclear error messages. Introducing new value for given type
+immediately fails every code path coming through the matcher. No new test cases
+for new value is required. This is one of the features of `dry-matcher` I wanted to focus on.
 
 ## Final Words
 
