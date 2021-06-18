@@ -400,7 +400,7 @@ end
 In case you don't know, you can just concatenate the tests with implementation
 and execute it locally. This will run all the test for you without installing
 any external dependencies. Otherwise you might just use this
-[gist](https://gist.github.com/adlugopolski/eb65290eb4b1ec9bd294160d3b231a2f).
+[gist](https://gist.github.com/marzdrel/00fe5d497d10f361158242e5564d5477).
 
 ## Polymorphism
 
