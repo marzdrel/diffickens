@@ -411,11 +411,11 @@ pointed out, that polymorphism is a
 than any kind of pattern matching. While in general I agree, there are few important
 points worth mentioning in this context. Ruby doesn't support multi-dispatch
 polymorphism. Any kind of generic data coming from API or user input needs to be
-transformed using some kind of dispatch. Building objects from stings without any
-kind of guarding the input might lead to security concerns. Aside from, that unexpected
+transformed using some kind of dispatch. Building objects from strings without any
+kind of guarding the input might lead to security concerns. Aside from that, unexpected
 values generate very unclear error messages. Introducing new value for given type
 immediately fails every code path coming through the matcher. No new test cases
-for new value is required. This is one of the features of `dry-matcher` I wanted to focus on.
+for new value are required. This is one of the features of `dry-matcher` I wanted to focus on.
 
 ## Final Words
 
